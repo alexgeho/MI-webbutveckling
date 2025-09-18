@@ -1,0 +1,40 @@
+/* Стили для таблицы */
+table {
+  width: 100%;
+  border-collapse: collapse; /* убираем двойные границы */
+  margin: 20px 0;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Границы у ячеек */
+table, th, td {
+  border: 1px solid #333;
+}
+
+/* Заголовок */
+th {
+  background-color: #f2f2f2;
+  padding: 10px;
+  text-align: left;
+}
+
+/* Ячейки */
+td {
+  padding: 8px;
+}
+
+/* Чередование строк */
+tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Наведение на строку */
+tbody tr:hover {
+  background-color: #e6f7ff;
+}
+
+body {
+  background-color: pink;
+}
+
