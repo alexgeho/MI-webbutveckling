@@ -15,6 +15,12 @@ async function loadBlogs() {
     const blogList = document.getElementById("blog-list");
     blogList.innerHTML = ""; // очищаем список
 
+    // кнопка "Все посты"
+    const allPostsLi = document.createElement("li");
+    allPostsLi.className = "list-group-item";
+    allPostsLi.innerHTML = `<a href="#" class="blog-link fw-bold" data-id="all">All posts</a>`;
+    blogList.appendChild(allPostsLi);
+
     // создаём список блогов
     data.items.forEach(blog => {
       const li = document.createElement("li");
@@ -28,7 +34,11 @@ async function loadBlogs() {
       link.addEventListener("click", (e) => {
         e.preventDefault();
         const blogId = link.getAttribute("data-id");
-        loadPosts(blogId, link.textContent); // загружаем посты
+        if (blogId === "all") {
+          loadAllPosts(); // показываем все посты
+        } else {
+          loadPosts(blogId, link.textContent); // посты конкретного блога
+        }
       });
     });
 
@@ -37,44 +47,73 @@ async function loadBlogs() {
   }
 }
 
-// Загружаем посты для выбранного блога
-async function loadPosts(blogId, blogName) {
+// Загружаем все посты
+async function loadAllPosts() {
   try {
-    const res = await fetch(`${API_URL}/blogs/${blogId}/posts`);
+    const res = await fetch(`${API_URL}/posts`);
     if (!res.ok) throw new Error("Ошибка загрузки постов");
 
     const data = await res.json();
-    console.log("📌 Posts:", data);
+    console.log("📌 All Posts:", data);
 
-    const postsContainer = document.getElementById("posts");
-    postsContainer.innerHTML = `<h5>Posts from ${blogName}</h5>`;
-
-    const row = document.createElement("div");
-    row.className = "row g-3"; // Bootstrap сетка с отступами
-
-    data.items.forEach(post => {
-      const col = document.createElement("div");
-      col.className = "col-md-6"; // по 2 поста в строке
-
-      col.innerHTML = `
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">${post.title}</h5>
-            <p class="card-text">${post.shortDescription || ""}</p>
-            <a href="post.html?id=${post.id}" class="btn btn-primary">Read more</a>
-          </div>
-        </div>
-      `;
-
-      row.appendChild(col);
-    });
-
-    postsContainer.appendChild(row);
+    renderPosts(data.items, "All posts");
   } catch (err) {
-    console.error("Ошибка при загрузке постов:", err);
+    console.error("Ошибка при загрузке всех постов:", err);
+  }
+}
+
+// Загружаем посты конкретного блога
+// Загружаем посты конкретного блога
+async function loadPosts(blogId, blogName) {
+  try {
+    const res = await fetch(`${API_URL}/blogs/${blogId}/posts`);
+    if (!res.ok) throw new Error("Ошибка загрузки постов блога");
+
+    const data = await res.json();
+    console.log(`📌 Posts from ${blogName}:`, data);
+
+    renderPosts(data.items, `Posts from ${blogName}`);
+  } catch (err) {
+    console.error("Ошибка при загрузке постов блога:", err);
   }
 }
 
 
+// Рендер постов сеткой
+function renderPosts(posts, title) {
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = `<h4>${title}</h4>`;
+
+  if (!posts || posts.length === 0) {
+    postsContainer.innerHTML += `<p>No posts found</p>`;
+    return;
+  }
+
+  const row = document.createElement("div");
+  row.className = "row row-cols-1 row-cols-md-2 g-4"; // сетка 2 колонки
+
+  posts.forEach(post => {
+    const col = document.createElement("div");
+    col.className = "col";
+    col.innerHTML = `
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">${post.title}</h5>
+          <p class="card-text">${post.shortDescription}</p>
+        </div>
+        <div class="card-footer text-muted small">
+          ${new Date(post.createdAt).toLocaleDateString()}
+        </div>
+      </div>
+    `;
+    row.appendChild(col);
+  });
+
+  postsContainer.appendChild(row);
+}
+
 // запуск
-document.addEventListener("DOMContentLoaded", loadBlogs);
+document.addEventListener("DOMContentLoaded", () => {
+  loadBlogs();
+  loadAllPosts(); // сразу показываем все посты
+});
