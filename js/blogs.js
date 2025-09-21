@@ -15,11 +15,11 @@ async function loadBlogs() {
     const blogList = document.getElementById("blog-list");
     blogList.innerHTML = ""; // очищаем список
 
-    // кнопка "Все посты"
-    const allPostsLi = document.createElement("li");
-    allPostsLi.className = "list-group-item";
-    allPostsLi.innerHTML = `<a href="#" class="blog-link fw-bold" data-id="all">All posts</a>`;
-    blogList.appendChild(allPostsLi);
+    // // кнопка "Все посты"
+    // const allPostsLi = document.createElement("li");
+    // allPostsLi.className = "list-group-item";
+    // allPostsLi.innerHTML = `<a href="#" class="blog-link " data-id="all">Start page</a>`;
+    // blogList.appendChild(allPostsLi);
 
     // создаём список блогов
     data.items.forEach(blog => {
